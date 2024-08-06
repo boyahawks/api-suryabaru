@@ -1,9 +1,22 @@
-module.exports = {
-  // LOCAL
+// module.exports = {
+//   // LOCAL
+//   multipleStatements: true,
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "db_sba",
+//   connectionLimit: 10,
+//   connectTimeout: 60 * 60 * 1000,
+//   acquireTimeout: 60 * 60 * 1000,
+//   timezone: "+00:00",
+//   timeout: 60 * 60 * 1000,
+// };
+
+module.exports = { // HOSTING
   multipleStatements: true,
   host: "localhost",
   user: "root",
-  password: "",
+  password: "Ciapps2024_ASB",
   database: "db_sba",
   connectionLimit: 10,
   connectTimeout: 60 * 60 * 1000,
@@ -11,16 +24,3 @@ module.exports = {
   timezone: "+00:00",
   timeout: 60 * 60 * 1000,
 };
-
-// module.exports = { // HOSTING
-//   multipleStatements: true,
-//   host: "localhost",
-//   user: "aksm5425",
-//   password: "9H9hExBj3Ee361",
-//   database: "aksm5425_suryabaru",
-//   connectionLimit: 10,
-//   connectTimeout: 60 * 60 * 1000,
-//   acquireTimeout: 60 * 60 * 1000,
-//   timezone: "+00:00",
-//   timeout: 60 * 60 * 1000,
-// };

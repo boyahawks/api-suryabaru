@@ -33,7 +33,7 @@ app.use(
 const appRoute = require("./src/routes/route");
 app.use("/api/", appRoute);
 
-const PORT = 3700; // or any other port
+const PORT = 3200; // or any other port
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
