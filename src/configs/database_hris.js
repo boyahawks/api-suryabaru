@@ -14,7 +14,8 @@
 
 module.exports = { // HOSTING
   multipleStatements: true,
-  host: "localhost",
+  host: "127.0.0.1",
+  dialect: "mysql",
   user: "root",
   password: "Ciapps2024_ASB",
   database: "db_sba",
