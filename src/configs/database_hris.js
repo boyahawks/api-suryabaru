@@ -14,11 +14,11 @@
 
 module.exports = { // HOSTING
   multipleStatements: true,
-  host: "127.0.0.1",
-  dialect: "mysql",
+  host: "localhost",
   user: "bayu",
   password: "mysqldbaap2025",
   database: "db_sba",
+  port: 3306,
   connectionLimit: 10,
   connectTimeout: 60 * 60 * 1000,
   acquireTimeout: 60 * 60 * 1000,
