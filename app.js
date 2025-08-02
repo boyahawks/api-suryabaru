@@ -3,20 +3,24 @@ const basicAuth = require("express-basic-auth");
 const app = express();
 const multer = require("multer");
 const bodyParser = require("body-parser");
-// const fileUpload = require("express-fileupload");
 const cors = require("cors");
+const os = require("os");
 
+// Body parser config
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-// untuk akses file static
-app.use(express.static("public"));
-app.use(cors());
 
+// Static file
+app.use(express.static("public"));
+
+// CORS
+app.use(cors());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   next();
 });
 
+// Basic auth
 app.use(
   basicAuth({
     authorizer: (username, password) => {
@@ -30,13 +34,36 @@ app.use(
   })
 );
 
+// Logging IP & headers
+app.use((req, res, next) => {
+  console.log("IP:", req.ip);
+  console.log("Headers:", req.headers);
+  next();
+});
+
+// Routes
 const appRoute = require("./src/routes/route");
 app.use("/api/", appRoute);
 
-const PORT = 3000; // or any other port
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+// Get local network IP
+function getLocalIP() {
+  const interfaces = os.networkInterfaces();
+  for (const iface of Object.values(interfaces)) {
+    for (const alias of iface) {
+      if (alias.family === "IPv4" && !alias.internal) {
+        return alias.address;
+      }
+    }
+  }
+  return "localhost";
+}
+
+const PORT = 3000;
+const HOST = "0.0.0.0";
+
+app.listen(PORT, HOST, () => {
+  const localIP = getLocalIP();
+  console.log(`✅ Server running at:`);
+  console.log(`👉 Localhost:   http://localhost:${PORT}`);
+  console.log(`👉 Local LAN:   http://${localIP}:${PORT}`);
 });
-// app.listen(PORT, '0.0.0.0', () => {
-//   console.log(`Server running on port ${PORT}`);
-// });

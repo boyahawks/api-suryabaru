@@ -48,6 +48,7 @@ module.exports = {
 
     var query_check1 = `SELECT * FROM users WHERE no_wa='${nomor}';`;
     var check_user = await select_global(query_check1);
+    // console.log(`hasil query : ${JSON.stringify(check_user)}`);
     if (check_user[0] == true && check_user[1].length != 0) {
       var status = utils.decrypt(password, check_user[1][0].password);
       if (status == true) {

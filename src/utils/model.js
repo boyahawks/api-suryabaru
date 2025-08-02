@@ -1,8 +1,4 @@
-const config = require("../configs/database_hris"); // Asumsi ini berisi objek konfigurasi DB Anda
-const mysql = require("mysql2/promise"); // Menggunakan versi Promise dari mysql2
-
-// Buat pool koneksi. Pool ini akan mengelola koneksi ke database Anda secara efisien.
-const pool = mysql.createPool(config);
+const {getConnection} = require("../configs/database_hris"); // Asumsi ini berisi objek konfigurasi DB Anda
 
 /**
  * Fungsi untuk melakukan SELECT query ke database.
@@ -16,13 +12,13 @@ async function select_global(sqlQuery) {
   let connection; // Deklarasikan di luar try agar bisa diakses di finally
   try {
     // Dapatkan koneksi dari pool. Ini otomatis mengelola koneksi yang tersedia.
-    connection = await pool.getConnection();
+    connection = await getConnection();
 
     // Jalankan query.
     // Metode query() dari koneksi Promise mengembalikan array [rows, fields].
     const [results] = await connection.query(sqlQuery);
 
-    return [true, results];
+    return [true, [results]];
   } catch (error) {
     // Tangani error yang terjadi selama koneksi atau eksekusi query.
     console.error("Error in select_global:", error.message);
@@ -45,13 +41,13 @@ async function select_global(sqlQuery) {
 async function transaksi(sqlQuery, params) {
   let connection;
   try {
-    connection = await pool.getConnection();
+    connection = await getConnection();
 
     // Jalankan query dengan prepared statement. Ini sangat penting untuk mencegah SQL Injection.
     // params akan secara otomatis di-escaped dan di-bind ke placeholder '?' dalam sqlQuery.
     const [results] = await connection.execute(sqlQuery, params);
 
-    return [true, results];
+    return [true, [results]];
   } catch (error) {
     console.error("Error in transaksi:", error.message);
     throw error;

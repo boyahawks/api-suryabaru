@@ -1,27 +1,32 @@
-// module.exports = {
-//   // LOCAL
-//   multipleStatements: true,
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "db_sba",
-//   connectionLimit: 10,
-//   connectTimeout: 60 * 60 * 1000,
-//   acquireTimeout: 60 * 60 * 1000,
-//   timezone: "+00:00",
-//   timeout: 60 * 60 * 1000,
-// };
+const mariadb = require("mariadb");
 
-module.exports = { // HOSTING
-  multipleStatements: true,
-  host: "127.0.0.1",
-  user: "bayu",
-  password: "mysqldbaap2025",
-  database: "db_sba",
-  port: 3306,
-  connectionLimit: 10,
-  connectTimeout: 60 * 60 * 1000,
-  acquireTimeout: 60 * 60 * 1000,
-  timezone: "+00:00",
-  timeout: 60 * 60 * 1000,
+// const pool = mariadb.createPool({ // local macbook
+//   host: "127.0.0.1", // Alamat host MariaDB
+//   user: "root", // Username MariaDB
+//   password: "sahabatku", // Password MariaDB
+//   database: "db_sba", // Nama database
+//   connectionLimit: 5, // Maksimal koneksi simultan
+// });
+const pool = mariadb.createPool({  // hosting
+  host: "127.0.0.1", // Alamat host MariaDB
+  user: "bayu", // Username MariaDB
+  password: "mysqldbaap2025", // Password MariaDB
+  database: "db_sba", // Nama database
+  connectionLimit: 5, // Maksimal koneksi simultan
+});
+
+async function getConnection() {
+  let conn;
+  try {
+    conn = await pool.getConnection(); // <-- ini yang benar
+    console.log("Koneksi ke MariaDB berhasil!");
+    return conn;
+  } catch (err) {
+    console.error("Gagal terhubung ke MariaDB: " + err);
+    throw err;
+  }
+}
+
+module.exports = {
+  getConnection,
 };
