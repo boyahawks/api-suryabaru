@@ -1,4 +1,4 @@
-const {getConnection} = require("../configs/database_hris"); // Asumsi ini berisi objek konfigurasi DB Anda
+const { getConnection } = require("../configs/database_hris"); // Asumsi ini berisi objek konfigurasi DB Anda
 
 /**
  * Fungsi untuk melakukan SELECT query ke database.
@@ -16,9 +16,10 @@ async function select_global(sqlQuery) {
 
     // Jalankan query.
     // Metode query() dari koneksi Promise mengembalikan array [rows, fields].
-    const [results] = await connection.query(sqlQuery);
+    const results = await connection.query(sqlQuery);
+    console.log("Query results:", results); // 👈 tambahkan ini
 
-    return [true, [results]];
+    return [true, results];
   } catch (error) {
     // Tangani error yang terjadi selama koneksi atau eksekusi query.
     console.error("Error in select_global:", error.message);
@@ -45,9 +46,9 @@ async function transaksi(sqlQuery, params) {
 
     // Jalankan query dengan prepared statement. Ini sangat penting untuk mencegah SQL Injection.
     // params akan secara otomatis di-escaped dan di-bind ke placeholder '?' dalam sqlQuery.
-    const [results] = await connection.execute(sqlQuery, params);
+    const results = await connection.execute(sqlQuery, params);
 
-    return [true, [results]];
+    return [true, results];
   } catch (error) {
     console.error("Error in transaksi:", error.message);
     throw error;

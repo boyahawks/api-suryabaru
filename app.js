@@ -46,24 +46,24 @@ const appRoute = require("./src/routes/route");
 app.use("/api/", appRoute);
 
 // Get local network IP
-function getLocalIP() {
-  const interfaces = os.networkInterfaces();
-  for (const iface of Object.values(interfaces)) {
-    for (const alias of iface) {
-      if (alias.family === "IPv4" && !alias.internal) {
-        return alias.address;
-      }
-    }
-  }
-  return "localhost";
-}
+// function getLocalIP() {
+//   const interfaces = os.networkInterfaces();
+//   for (const iface of Object.values(interfaces)) {
+//     for (const alias of iface) {
+//       if (alias.family === "IPv4" && !alias.internal) {
+//         return alias.address;
+//       }
+//     }
+//   }
+//   return "localhost";
+// }
 
 const PORT = 3000;
 const HOST = "0.0.0.0";
 
 app.listen(PORT, HOST, () => {
-  const localIP = getLocalIP();
+  // const localIP = getLocalIP();
   console.log(`✅ Server running at:`);
   console.log(`👉 Localhost:   http://localhost:${PORT}`);
-  console.log(`👉 Local LAN:   http://${localIP}:${PORT}`);
+  // console.log(`👉 Local LAN:   http://${localIP}:${PORT}`);
 });
