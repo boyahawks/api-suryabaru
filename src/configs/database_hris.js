@@ -8,7 +8,7 @@ const mariadb = require("mariadb");
 //   connectionLimit: 5, // Maksimal koneksi simultan
 // });
 const pool = mariadb.createPool({  // hosting
-  host: "127.0.0.1", // Alamat host MariaDB
+  host: "147.93.159.16", // Alamat host MariaDB
   user: "bayu", // Username MariaDB
   password: "mysqldbaap2025", // Password MariaDB
   database: "db_sba", // Nama database
