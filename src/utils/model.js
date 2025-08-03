@@ -17,7 +17,7 @@ async function select_global(sqlQuery) {
     // Jalankan query.
     // Metode query() dari koneksi Promise mengembalikan array [rows, fields].
     const results = await connection.query(sqlQuery);
-    console.log("Query results:", results); // 👈 tambahkan ini
+    // console.log("Query results:", results); // 👈 tambahkan ini
 
     return [true, results];
   } catch (error) {

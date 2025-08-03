@@ -35,11 +35,11 @@ app.use(
 );
 
 // Logging IP & headers
-app.use((req, res, next) => {
-  console.log("IP:", req.ip);
-  console.log("Headers:", req.headers);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log("IP:", req.ip);
+//   console.log("Headers:", req.headers);
+//   next();
+// });
 
 // Routes
 const appRoute = require("./src/routes/route");

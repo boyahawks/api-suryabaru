@@ -53,7 +53,7 @@ module.exports = {
     else {
       select_query = `SELECT * FROM ${getTableName} ORDER BY id DESC`;
     }
-    console.log(`query : ${select_query}`);
+    // console.log(`query : ${select_query}`);
     var proses_data = await select_global(select_query);
 
     // console.log(proses_data);
