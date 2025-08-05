@@ -1,28 +1,23 @@
-const mariadb = require("mariadb");
+const mysql = require("mysql2/promise");
 
-// const pool = mariadb.createPool({ // local macbook
-//   host: "127.0.0.1", // Alamat host MariaDB
-//   user: "root", // Username MariaDB
-//   password: "sahabatku", // Password MariaDB
-//   database: "db_sba", // Nama database
-//   connectionLimit: 5, // Maksimal koneksi simultan
-// });
-const pool = mariadb.createPool({  // hosting
-  host: "147.93.159.16", // Alamat host MariaDB
-  user: "bayu", // Username MariaDB
-  password: "mysqldbaap2025", // Password MariaDB
+// Pool koneksi untuk hosting
+const pool = mysql.createPool({
+  host: "147.93.159.16", // Alamat host MySQL
+  user: "bayu", // Username MySQL
+  password: "mysqldbaap2025@Bayu", // Password MySQL
   database: "db_sba", // Nama database
+  waitForConnections: true,
   connectionLimit: 5, // Maksimal koneksi simultan
+  queueLimit: 0,
 });
 
 async function getConnection() {
-  let conn;
   try {
-    conn = await pool.getConnection(); // <-- ini yang benar
-    console.log("Koneksi ke MariaDB berhasil!");
-    return conn;
+    const connection = await pool.getConnection();
+    console.log("Koneksi ke MySQL berhasil!");
+    return connection;
   } catch (err) {
-    console.error("Gagal terhubung ke MariaDB: " + err);
+    console.error("Gagal terhubung ke MySQL: " + err.message);
     throw err;
   }
 }
