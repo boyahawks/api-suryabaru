@@ -9,6 +9,7 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
+RUN npm install pm2 -g
 
 # Copy sisa kode aplikasi
 COPY . .
@@ -17,4 +18,4 @@ COPY . .
 EXPOSE 3000
 
 # Perintah untuk menjalankan aplikasi
-CMD ["npm", "start"]
+CMD ["pm2-runtime", "app.js"]
