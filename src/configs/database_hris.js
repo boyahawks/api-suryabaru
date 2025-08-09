@@ -7,8 +7,12 @@ const pool = mysql.createPool({
   password: "mysqldbaap2025@Bayu", // Password MySQL
   database: "db_sba", // Nama database
   waitForConnections: true,
-  connectionLimit: 5, // Maksimal koneksi simultan
+  connectionLimit: 10, // koneksi paralel
   queueLimit: 0,
+  connectTimeout: 30000, // 30 detik
+  acquireTimeout: 30000, // 30 detik
+  timezone: "+07:00",
+  dateStrings: true,
 });
 
 async function getConnection() {

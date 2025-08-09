@@ -1,4 +1,9 @@
-const { select_global, transaksi } = require("../utils/model");
+const {
+  select_global,
+  transaksi,
+  buildUpdateQuery,
+  buildInsertQuery,
+} = require("../utils/model");
 
 module.exports = {
   async allData(req, res) {
@@ -75,28 +80,44 @@ module.exports = {
   async editData(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
 
-    let name_url = req.originalUrl;
-    var convert1 = name_url.substring(name_url.lastIndexOf("/") + 1);
-    var nameTable = convert1.substring(convert1.lastIndexOf("-") + 1);
-    var nameWhere = req.body.val;
-    var cariWhere = req.body.cari;
-    var bodyValue = req.body;
-    delete bodyValue.val;
-    delete bodyValue.cari;
+    try {
+      const name_url = req.originalUrl;
+      const convert1 = name_url.substring(name_url.lastIndexOf("/") + 1);
+      const nameTable = convert1.substring(convert1.lastIndexOf("-") + 1);
 
-    var update_data = `UPDATE ${nameTable} SET ? WHERE ${nameWhere} = "${cariWhere}";`;
-    console.log(`query update data ${update_data}`);
-    var hasil_update = await transaksi(update_data, bodyValue);
-    if (hasil_update[0] == true) {
-      res.send({
-        status: true,
-        message: "Berhasil update data!",
-        data: hasil_update[1],
-      });
-    } else {
-      res.send({
+      const nameWhere = req.body.val;
+      const cariWhere = req.body.cari;
+
+      const bodyValue = { ...req.body };
+      delete bodyValue.val;
+      delete bodyValue.cari;
+
+      // Pakai query builder untuk keamanan
+      const updateData = buildUpdateQuery(
+        nameTable,
+        bodyValue,
+        nameWhere,
+        cariWhere
+      );
+      const hasil_update = await transaksi(updateData.query, updateData.values);
+
+      if (hasil_update[0]) {
+        res.send({
+          status: true,
+          message: "Berhasil update data!",
+          data: hasil_update[1],
+        });
+      } else {
+        res.send({
+          status: false,
+          message: "Gagal update data",
+        });
+      }
+    } catch (error) {
+      console.error("Error editData:", error.message);
+      res.status(500).send({
         status: false,
-        message: "Gagal update data",
+        message: "Terjadi kesalahan server",
       });
     }
   },
@@ -104,32 +125,31 @@ module.exports = {
   async insertData(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
 
-    let name_url = req.originalUrl;
-    var nameTable = name_url.substring(name_url.lastIndexOf("/") + 1);
-    var bodyValue = req.body;
+    try {
+      const name_url = req.originalUrl;
+      const nameTable = name_url.substring(name_url.lastIndexOf("/") + 1);
+      const bodyValue = req.body;
 
-    // console.log(req.body);
-    var fields = Object.keys(bodyValue).join(", ");
-    var placeholders = Object.keys(bodyValue)
-      .map(() => "?")
-      .join(", ");
-    var values = Object.values(bodyValue);
+      const insertData = buildInsertQuery(nameTable, bodyValue);
+      const hasilInsert = await transaksi(insertData.query, insertData.values);
 
-    var insertdata = `INSERT INTO ${nameTable} (${fields}) VALUES (${placeholders})`;
-    var hasilInsert = await transaksi(insertdata, values);
-
-    // var insertdata = `INSERT INTO ${nameTable} SET ?;`;
-    // var hasilInsert = await transaksi(insertdata, bodyValue);
-    if (hasilInsert[0] == true) {
-      res.send({
-        status: true,
-        message: "Berhasil insert data!",
-        data: hasilInsert[1],
-      });
-    } else {
-      res.send({
+      if (hasilInsert[0]) {
+        res.send({
+          status: true,
+          message: "Berhasil insert data!",
+          data: hasilInsert[1],
+        });
+      } else {
+        res.send({
+          status: false,
+          message: "Gagal insert data",
+        });
+      }
+    } catch (error) {
+      console.error("Error insertData:", error.message);
+      res.status(500).send({
         status: false,
-        message: "Gagal insert data",
+        message: "Terjadi kesalahan server",
       });
     }
   },

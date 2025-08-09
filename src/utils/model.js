@@ -45,7 +45,32 @@ async function transaksi(sqlQuery, params) {
   }
 }
 
+function buildInsertQuery(tableName, dataObj) {
+  const fields = Object.keys(dataObj).join(", ");
+  const placeholders = Object.keys(dataObj)
+    .map(() => "?")
+    .join(", ");
+  const values = Object.values(dataObj);
+  return {
+    query: `INSERT INTO ${tableName} (${fields}) VALUES (${placeholders})`,
+    values,
+  };
+}
+
+function buildUpdateQuery(tableName, dataObj, whereField, whereValue) {
+  const fields = Object.keys(dataObj)
+    .map((key) => `${key} = ?`)
+    .join(", ");
+  const values = Object.values(dataObj);
+  return {
+    query: `UPDATE ${tableName} SET ${fields} WHERE ${whereField} = ?`,
+    values: [...values, whereValue],
+  };
+}
+
 module.exports = {
   select_global,
   transaksi,
+  buildInsertQuery,
+  buildUpdateQuery
 };
