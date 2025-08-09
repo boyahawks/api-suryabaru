@@ -109,9 +109,17 @@ module.exports = {
     var bodyValue = req.body;
 
     // console.log(req.body);
+    var fields = Object.keys(bodyValue).join(", ");
+    var placeholders = Object.keys(bodyValue)
+      .map(() => "?")
+      .join(", ");
+    var values = Object.values(bodyValue);
 
-    var insertdata = `INSERT INTO ${nameTable} SET ?;`;
-    var hasilInsert = await transaksi(insertdata, bodyValue);
+    var insertdata = `INSERT INTO ${nameTable} (${fields}) VALUES (${placeholders})`;
+    var hasilInsert = await transaksi(insertdata, values);
+
+    // var insertdata = `INSERT INTO ${nameTable} SET ?;`;
+    // var hasilInsert = await transaksi(insertdata, bodyValue);
     if (hasilInsert[0] == true) {
       res.send({
         status: true,
