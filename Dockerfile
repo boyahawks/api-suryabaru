@@ -1,13 +1,16 @@
-# Gunakan base image Node.js versi slim atau alpine untuk efisiensi
+# Gunakan base image Node.js
 FROM node:22-alpine
 
 # Set working directory di dalam container
 WORKDIR /app
 
+# Install Python dan tool pendukung untuk kompilasi native modules (seperti bcrypt)
+RUN apk add --no-cache python3 make g++
+
 # Copy dependency files
 COPY package*.json ./
 
-# Install dependencies khusus production
+# Install dependencies
 RUN npm install --production
 
 # Copy sisa kode aplikasi
