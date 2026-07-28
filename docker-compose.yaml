@@ -1,28 +1,21 @@
 version: "3.8"
 
 services:
-  caddy:
-    image: caddy:latest
-    container_name: suryabaru_caddy
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    depends_on:
-      - backend
-
   backend:
     build: .
-    container_name: backend
+    container_name: suryabaru_backend # (Opsional disesuaikan agar tidak konflik nama container)
     restart: always
     expose:
       - "3500"
     env_file:
       - .env
+    networks:
+      - caddy_network
+      - default
+
+networks:
+  caddy_network:
+    external: true
 
 volumes:
   caddy_data:
