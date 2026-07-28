@@ -1,21 +1,29 @@
 version: "3.8"
 
 services:
-  backend:
-    build:
-      context: .
-      args:
-        - DB_HOST=example # Atau gunakan variabel dari .env secara otomatis
-    container_name: backend
+  caddy:
+    image: caddy:latest
+    container_name: suryabaru_caddy
     restart: always
     ports:
-      - "3500:3500"
-    env_file:
-      - .env # Ini membaca file .env untuk runtime aplikasi
-    networks:
-      - caddy_network
-      - default
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
 
-networks:
-  caddy_network:
-    external: true
+  backend:
+    build: .
+    container_name: backend
+    restart: always
+    expose:
+      - "3500"
+    env_file:
+      - .env
+
+volumes:
+  caddy_data:
+  caddy_config:
