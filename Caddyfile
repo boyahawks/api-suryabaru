@@ -1,0 +1,3 @@
+api.suryabaruabadi.com {
+    reverse_proxy backend:3500
+}

@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const basicAuth = require("express-basic-auth");
 const app = express();
@@ -24,10 +26,13 @@ app.use((req, res, next) => {
 app.use(
   basicAuth({
     authorizer: (username, password) => {
-      const userMatches = basicAuth.safeCompare(username, "sbanewapplication");
+      const userMatches = basicAuth.safeCompare(
+        username,
+        process.env.BASIC_AUTH_USER,
+      );
       const passwordMatches = basicAuth.safeCompare(
         password,
-        "0a308bd81a825501a0b753eb1d4befff22d47ab8a50aa4b33dca1e3667e1d1ab",
+        process.env.BASIC_AUTH_PASSWORD,
       );
       return userMatches & passwordMatches;
     },
@@ -58,8 +63,8 @@ app.use("/api/", appRoute);
 //   return "localhost";
 // }
 
-const PORT = 3500;
-const HOST = "0.0.0.0";
+const PORT = process.env.PORT || 3500;
+const HOST = process.env.HOST || "0.0.0.0";
 
 app.listen(PORT, HOST, () => {
   // const localIP = getLocalIP();

@@ -2,10 +2,10 @@ const mysql = require("mysql2/promise");
 
 // Pool koneksi untuk hosting
 const pool = mysql.createPool({
-  host: "147.93.159.16", // Alamat host MySQL
-  user: "bayu", // Username MySQL
-  password: "mysqldbaap2025@Bayu", // Password MySQL
-  database: "db_sba", // Nama database
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10, // koneksi paralel
   queueLimit: 0,

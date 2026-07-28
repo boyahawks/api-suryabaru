@@ -1,21 +1,20 @@
-# Gunakan base image Node.js
-FROM node:20
+# Gunakan base image Node.js versi slim atau alpine untuk efisiensi
+FROM node:22-alpine
 
 # Set working directory di dalam container
 WORKDIR /app
 
-# Copy package.json dan package-lock.json (jika ada)
+# Copy dependency files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
-RUN npm install pm2 -g
+# Install dependencies khusus production
+RUN npm install --production
 
 # Copy sisa kode aplikasi
 COPY . .
 
-# Expose port aplikasi (sesuai port di app.js)
+# Expose port aplikasi sesuai app.js
 EXPOSE 3500
 
-# Perintah untuk menjalankan aplikasi
-CMD ["pm2-runtime", "app.js"]
+# Jalankan aplikasi langsung dengan node
+CMD ["node", "app.js"]
