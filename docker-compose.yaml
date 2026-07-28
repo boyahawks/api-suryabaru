@@ -2,17 +2,20 @@ version: "3.8"
 
 services:
   backend:
-    build: .
+    build:
+      context: .
+      args:
+        - DB_HOST=example # Atau gunakan variabel dari .env secara otomatis
     container_name: backend
     restart: always
-    env_file:
-      - .env
     ports:
       - "3500:3500"
+    env_file:
+      - .env # Ini membaca file .env untuk runtime aplikasi
     networks:
       - caddy_network
       - default
 
 networks:
   caddy_network:
-    external: true # Hubungkan ke network yang sama dengan Caddy utama Anda (sesuaikan jika nama network berbeda)
+    external: true
