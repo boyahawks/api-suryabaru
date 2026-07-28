@@ -15,7 +15,7 @@ RUN npm install pm2 -g
 COPY . .
 
 # Expose port aplikasi (sesuai port di app.js)
-EXPOSE 3000
+EXPOSE 3500
 
 # Perintah untuk menjalankan aplikasi
 CMD ["pm2-runtime", "app.js"]

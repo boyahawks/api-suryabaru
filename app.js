@@ -27,11 +27,11 @@ app.use(
       const userMatches = basicAuth.safeCompare(username, "sbanewapplication");
       const passwordMatches = basicAuth.safeCompare(
         password,
-        "0a308bd81a825501a0b753eb1d4befff22d47ab8a50aa4b33dca1e3667e1d1ab"
+        "0a308bd81a825501a0b753eb1d4befff22d47ab8a50aa4b33dca1e3667e1d1ab",
       );
       return userMatches & passwordMatches;
     },
-  })
+  }),
 );
 
 // Logging IP & headers
@@ -58,7 +58,7 @@ app.use("/api/", appRoute);
 //   return "localhost";
 // }
 
-const PORT = 3000;
+const PORT = 3500;
 const HOST = "0.0.0.0";
 
 app.listen(PORT, HOST, () => {
