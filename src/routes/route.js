@@ -14,22 +14,17 @@ router.patch("/users", globalCt.editData);
 // PENAWARAN HARGA
 router.get("/penawaran", authenticateToken, globalCt.allData);
 router.get("/penawaran-detail/:id", authenticateToken, globalCt.allData);
-router.patch("/penawaran", authenticateToken, globalCt.editData);
-router.patch("/isi_penawaran", authenticateToken, globalCt.editData);
+router.patch("/penawaran", authenticateToken, penawaranCt.editPenawaranHarga);
+router.delete("/penawaran", authenticateToken, penawaranCt.hapusPenawaranHarga);
 router.post("/penawaran", authenticateToken, penawaranCt.simpanPenawaranHarga);
 
 // INVOICE
 router.get("/invoice", authenticateToken, globalCt.allData);
 router.get("/invoice-detail/:id", authenticateToken, globalCt.allData);
 router.get("/kwitansi-detail/:id", authenticateToken, globalCt.allData);
-router.patch("/invoice", authenticateToken, globalCt.editData);
-router.delete("/invoice", authenticateToken, globalCt.deleteData);
-router.patch("/kwitansi", authenticateToken, globalCt.editData);
-router.delete("/kwitansi", authenticateToken, globalCt.deleteData);
-router.patch("/isi_invoice", authenticateToken, globalCt.editData);
-router.delete("/isi_invoice", authenticateToken, globalCt.deleteData);
+router.patch("/invoice", authenticateToken, invoiceCt.editInvoice);
+router.delete("/invoice", authenticateToken, invoiceCt.hapusInvoice);
 router.post("/invoice", authenticateToken, invoiceCt.simpanInvoice);
-router.post("/isi_invoice", authenticateToken, globalCt.insertData);
 
 // GLOBAL MODUL
 router.get("/validasiToken", authenticateToken, globalCt.validasiToken);

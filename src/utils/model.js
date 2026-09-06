@@ -68,9 +68,37 @@ function buildUpdateQuery(tableName, dataObj, whereField, whereValue) {
   };
 }
 
+/**
+ * Jalankan beberapa query dalam satu transaksi DB (commit/rollback).
+ * @param {(connection: import('mysql2/promise').PoolConnection) => Promise<any>} callback
+ */
+async function withTransaction(callback) {
+  let connection;
+  try {
+    connection = await getConnection();
+    await connection.beginTransaction();
+    const result = await callback(connection);
+    await connection.commit();
+    return [true, result];
+  } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (_) {
+        /* ignore rollback error */
+      }
+    }
+    console.error("Error in withTransaction:", error.message);
+    throw error;
+  } finally {
+    if (connection) connection.release();
+  }
+}
+
 module.exports = {
   select_global,
   transaksi,
   buildInsertQuery,
-  buildUpdateQuery
+  buildUpdateQuery,
+  withTransaction,
 };

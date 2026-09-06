@@ -157,36 +157,81 @@ module.exports = {
   async deleteData(req, res) {
     res.header("Access-Control-Allow-Origin", "*");
 
-    let name_url = req.originalUrl;
-    var convert1 = name_url.substring(name_url.lastIndexOf("/") + 1);
-    var nameTable = convert1.substring(convert1.lastIndexOf("-") + 1);
-    var jumlah_where = req.body.jumlah_where;
+    try {
+      const name_url = req.originalUrl;
+      const convert1 = name_url.substring(name_url.lastIndexOf("/") + 1);
+      const nameTable = convert1.substring(convert1.lastIndexOf("-") + 1);
+      const pkField = `id_${nameTable}`;
 
-    var hasil_where;
-    if (jumlah_where == "1") {
-      hasil_where = `${req.body.val1}="${req.body.cari1}"`;
-    } else if (jumlah_where == "2") {
-      hasil_where = `${req.body.val1}="${req.body.cari1}" AND ${req.body.val2}="${req.body.cari2}"`;
-    } else if (jumlah_where == "3") {
-      hasil_where = `${req.body.val1}="${req.body.cari1}" AND ${req.body.val2}="${req.body.cari2}" AND ${req.body.val3}="${req.body.cari3}"`;
-    } else if (jumlah_where == "4") {
-      hasil_where = `${req.body.val1}="${req.body.cari1}" AND ${req.body.val2}="${req.body.cari2}" AND ${req.body.val3}="${req.body.cari3}" AND ${req.body.val4}="${req.body.cari4}"`;
-    } else if (jumlah_where == "5") {
-      hasil_where = `${req.body.val1}="${req.body.cari1}" AND ${req.body.val2}="${req.body.cari2}" AND ${req.body.val3}="${req.body.cari3}" AND ${req.body.val4}="${req.body.cari4}" AND ${req.body.val5}="${req.body.cari5}"`;
-    }
+      const conditions = [];
+      const params = [];
 
-    var delete_data = `DELETE FROM ${nameTable} WHERE ${hasil_where};`;
-    var hasil_delete = await select_global(delete_data);
-    if (hasil_delete[0] == true) {
-      res.send({
-        status: true,
-        message: "Berhasil delete data!",
-        data: hasil_delete[1],
-      });
-    } else {
-      res.send({
+      // Multi-condition: val1/cari1 ... valN/cariN
+      const jumlah_where = parseInt(req.body.jumlah_where, 10) || 0;
+      if (jumlah_where > 0) {
+        for (let i = 1; i <= jumlah_where; i++) {
+          let field = req.body[`val${i}`];
+          const value = req.body[`cari${i}`];
+          if (!field || value == null || value === "") continue;
+          if (field === "id") field = pkField;
+          conditions.push(`${field} = ?`);
+          params.push(value);
+        }
+      }
+
+      // Single condition fallbacks (editData style / raw id)
+      if (conditions.length === 0) {
+        let whereField =
+          req.body.val || req.body.field || req.body.val1 || null;
+        let whereValue =
+          req.body.cari ??
+          req.body.value ??
+          req.body.cari1 ??
+          req.body[pkField] ??
+          req.body.id ??
+          null;
+
+        if (whereField === "id") whereField = pkField;
+        if (!whereField && whereValue != null && whereValue !== "") {
+          whereField = pkField;
+        }
+
+        if (whereField && whereValue != null && whereValue !== "") {
+          conditions.push(`${whereField} = ?`);
+          params.push(whereValue);
+        }
+      }
+
+      if (conditions.length === 0) {
+        return res.status(400).send({
+          status: false,
+          message: `Parameter delete tidak lengkap. Kirim ${pkField} atau val1/cari1.`,
+        });
+      }
+
+      const delete_data = `DELETE FROM ${nameTable} WHERE ${conditions.join(
+        " AND ",
+      )}`;
+      const hasil_delete = await transaksi(delete_data, params);
+
+      if (hasil_delete[0] == true) {
+        res.send({
+          status: true,
+          message: "Berhasil delete data!",
+          data: hasil_delete[1],
+        });
+      } else {
+        res.send({
+          status: false,
+          message: "Gagal delete data",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleteData:", error.message);
+      res.status(500).send({
         status: false,
-        message: "Gagal delete data",
+        message: "Terjadi kesalahan server",
+        error: error.message,
       });
     }
   },
