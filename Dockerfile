@@ -4,8 +4,8 @@ FROM node:22-alpine
 # Set working directory di dalam container
 WORKDIR /app
 
-# Install Python dan tool pendukung untuk kompilasi native modules (seperti bcrypt)
-RUN apk add --no-cache python3 make g++
+# Install Python + tool native modules + MariaDB/MySQL client untuk backup (mysqldump)
+RUN apk add --no-cache python3 make g++ mariadb-client
 
 # Copy dependency files
 COPY package*.json ./

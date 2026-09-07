@@ -71,4 +71,8 @@ app.listen(PORT, HOST, () => {
   console.log(`✅ Server running at:`);
   console.log(`👉 Localhost:   http://localhost:${PORT}`);
   // console.log(`👉 Local LAN:   http://${localIP}:${PORT}`);
+
+  // Cron backup database aktif setiap jam 00:00
+  const { startDbBackupCron } = require("./src/jobs/db_backup");
+  startDbBackupCron();
 });

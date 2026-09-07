@@ -9,6 +9,8 @@ services:
       - "3500"
     env_file:
       - .env
+    volumes:
+      - db_backups:/app/backups
     networks:
       - caddy_network
       - default
@@ -20,3 +22,4 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
+  db_backups:
