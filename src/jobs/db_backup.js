@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { spawn } = require("child_process");
+const { spawn, execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const os = require("os");
@@ -7,6 +7,21 @@ const os = require("os");
 const BACKUP_DIR =
   process.env.BACKUP_DIR || path.join(process.cwd(), "backups");
 const TIMEZONE = process.env.BACKUP_TZ || "Asia/Jakarta";
+// Default: jangan verify sertifikat SSL (hosting sering pakai cert self-signed)
+const SKIP_SSL_VERIFY =
+  String(process.env.BACKUP_SSL_VERIFY || "false").toLowerCase() !== "true";
+
+function resolveDumpBinary() {
+  for (const bin of ["mariadb-dump", "mysqldump"]) {
+    try {
+      execSync(`command -v ${bin}`, { stdio: "ignore" });
+      return bin;
+    } catch (_) {
+      // coba binary berikutnya
+    }
+  }
+  return "mariadb-dump";
+}
 
 function ensureBackupDir() {
   if (!fs.existsSync(BACKUP_DIR)) {
@@ -56,34 +71,43 @@ function removePreviousBackups(database, todayFilename) {
 
 function runMysqldump({ host, user, password, database }, outputPath) {
   return new Promise((resolve, reject) => {
+    const dumpBin = resolveDumpBinary();
     const cnfPath = path.join(
       os.tmpdir(),
-      `mysqldump-${process.pid}-${Date.now()}.cnf`,
+      `dbdump-${process.pid}-${Date.now()}.cnf`,
     );
 
-    const cnfContent = [
+    const cnfLines = [
       "[client]",
       `host=${host}`,
       `user=${user}`,
       `password=${password}`,
-      "",
-    ].join("\n");
+    ];
 
-    fs.writeFileSync(cnfPath, cnfContent, { mode: 0o600 });
+    // Hindari error 2026: certificate is NOT trusted
+    if (SKIP_SSL_VERIFY) {
+      cnfLines.push("ssl-verify-server-cert=false");
+    }
+
+    cnfLines.push("");
+    fs.writeFileSync(cnfPath, cnfLines.join("\n"), { mode: 0o600 });
+
+    const dumpArgs = [
+      `--defaults-extra-file=${cnfPath}`,
+      "--single-transaction",
+      "--routines",
+      "--triggers",
+      "--events",
+    ];
+
+    if (SKIP_SSL_VERIFY) {
+      dumpArgs.push("--ssl-verify-server-cert=0");
+    }
+
+    dumpArgs.push(database);
 
     const outStream = fs.createWriteStream(outputPath);
-    const dump = spawn(
-      "mysqldump",
-      [
-        `--defaults-extra-file=${cnfPath}`,
-        "--single-transaction",
-        "--routines",
-        "--triggers",
-        "--events",
-        database,
-      ],
-      { stdio: ["ignore", "pipe", "pipe"] },
-    );
+    const dump = spawn(dumpBin, dumpArgs, { stdio: ["ignore", "pipe", "pipe"] });
 
     let stderr = "";
 
@@ -105,7 +129,7 @@ function runMysqldump({ host, user, password, database }, outputPath) {
       outStream.destroy();
       reject(
         new Error(
-          `Gagal menjalankan mysqldump. Pastikan mysql-client terinstall. ${err.message}`,
+          `Gagal menjalankan ${dumpBin}. Pastikan mariadb-client terinstall. ${err.message}`,
         ),
       );
     });
@@ -126,7 +150,7 @@ function runMysqldump({ host, user, password, database }, outputPath) {
 
         reject(
           new Error(
-            `mysqldump gagal (exit ${code})${stderr ? `: ${stderr.trim()}` : ""}`,
+            `${dumpBin} gagal (exit ${code})${stderr ? `: ${stderr.trim()}` : ""}`,
           ),
         );
       });
