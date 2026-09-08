@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   backend:
     build: .
@@ -10,7 +8,8 @@ services:
     env_file:
       - .env
     volumes:
-      - db_backups:/app/backups
+      # Simpan backup di folder project server (host), bukan volume Docker internal
+      - ./backups:/app/backups
     networks:
       - caddy_network
       - default
@@ -22,4 +21,3 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
-  db_backups:
