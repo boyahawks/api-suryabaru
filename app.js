@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const basicAuth = require("express-basic-auth");
 const app = express();
-const multer = require("multer");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const os = require("os");
